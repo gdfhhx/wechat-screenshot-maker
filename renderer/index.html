@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微信聊天截图生成器</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧：控制面板 -->
+    <aside class="panel">
+      <div class="panel-header">
+        <h1>聊天截图生成器</h1>
+        <p class="sub">自定义微信风格聊天记录</p>
+      </div>
+
+      <div class="section">
+        <label class="section-title">会话类型</label>
+        <div class="segmented">
+          <button class="seg-btn active" data-chat-type="private">私聊</button>
+          <button class="seg-btn" data-chat-type="group">群聊</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <label class="section-title">顶部标题栏</label>
+        <input type="text" id="chat-title" placeholder="对方昵称 / 群名称" value="微信昵称" />
+        <div class="hint-row" id="group-member-hint" style="display:none">
+          <input type="number" id="member-count" min="1" max="99" value="3" />
+          <span>人（显示在标题栏）</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <label class="section-title">状态栏</label>
+        <div class="row">
+          <input type="text" id="signal" value="4G" style="width:52px" title="信号" />
+          <input type="text" id="time" value="18:30" style="width:60px" title="时间" />
+          <input type="number" id="battery" min="0" max="100" value="86" style="width:56px" title="电量" />
+          <span>%</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <label class="section-title">消息列表</label>
+        <div id="message-list" class="message-list"></div>
+        <button id="add-message" class="btn btn-primary btn-block">+ 添加消息</button>
+      </div>
+
+      <div class="section">
+        <label class="section-title">导出</label>
+        <div class="row">
+          <button id="export" class="btn btn-primary">保存图片</button>
+          <button id="copy" class="btn">复制到剪贴板</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧：手机预览 -->
+    <main class="preview-area">
+      <div class="preview-label">预览</div>
+      <div id="phone" class="phone">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <span class="sb-signal" id="sb-signal">4G</span>
+          <span class="sb-time" id="sb-time">18:30</span>
+          <span class="sb-battery">
+            <span class="battery-icon" id="battery-icon"></span>
+            <span id="sb-battery">86%</span>
+          </span>
+        </div>
+        <!-- 标题栏 -->
+        <div class="title-bar">
+          <span class="tb-back">‹</span>
+          <span class="tb-title" id="tb-title">微信昵称</span>
+          <span class="tb-more">•••</span>
+        </div>
+        <div class="tb-member-row" id="tb-member-row" style="display:none">
+          <span id="tb-member-count">3</span>人在本群
+        </div>
+        <!-- 聊天气泡区 -->
+        <div id="chat-area" class="chat-area"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="html-to-image.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
