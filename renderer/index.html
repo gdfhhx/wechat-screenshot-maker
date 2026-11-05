@@ -2,50 +2,73 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>微信聊天截图生成器</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-    <!-- 左侧：控制面板 -->
+    <!-- 左侧控制面板 -->
     <aside class="panel">
       <div class="panel-header">
         <h1>聊天截图生成器</h1>
-        <p class="sub">自定义微信风格聊天记录</p>
+        <p class="sub">微信 · 深色/浅色 · 手机样式</p>
       </div>
 
       <div class="section">
-        <label class="section-title">会话类型</label>
+        <label class="section-title">外观</label>
         <div class="segmented">
-          <button class="seg-btn active" data-chat-type="private">私聊</button>
-          <button class="seg-btn" data-chat-type="group">群聊</button>
+          <button class="seg-btn active" data-theme="dark">深色</button>
+          <button class="seg-btn" data-theme="light">浅色</button>
         </div>
       </div>
 
       <div class="section">
-        <label class="section-title">顶部标题栏</label>
-        <input type="text" id="chat-title" placeholder="对方昵称 / 群名称" value="微信昵称" />
-        <div class="hint-row" id="group-member-hint" style="display:none">
-          <input type="number" id="member-count" min="1" max="99" value="3" />
-          <span>人（显示在标题栏）</span>
+        <label class="section-title">标题栏</label>
+        <input type="text" id="chat-title" placeholder="对方昵称 / 群名" value="天津豹途机车销售服务中心 小杨" />
+        <div class="row">
+          <input type="text" id="back-badge" value="12" style="width:56px" title="返回旁的未读角标，留空隐藏" />
+          <span class="hint">角标数（留空隐藏）</span>
         </div>
       </div>
 
       <div class="section">
         <label class="section-title">状态栏</label>
         <div class="row">
-          <input type="text" id="signal" value="4G" style="width:52px" title="信号" />
-          <input type="text" id="time" value="18:30" style="width:60px" title="时间" />
-          <input type="number" id="battery" min="0" max="100" value="86" style="width:56px" title="电量" />
-          <span>%</span>
+          <input type="text" id="time" value="20:54" style="width:64px" />
+          <input type="text" id="signal-text" value="5G" style="width:48px" />
+          <input type="number" id="battery" min="0" max="100" value="31" style="width:56px" />
+          <span class="hint">时间 / 信号 / 电量%</span>
         </div>
+      </div>
+
+      <div class="section">
+        <label class="section-title">头像</label>
+        <div class="row avatar-row">
+          <div class="avatar-pick">
+            <img id="avatar-self-img" class="avatar-thumb" alt="" />
+            <button class="btn btn-sm" data-avatar="self">我的头像</button>
+          </div>
+          <div class="avatar-pick">
+            <img id="avatar-other-img" class="avatar-thumb" alt="" />
+            <button class="btn btn-sm" data-avatar="other">对方头像</button>
+          </div>
+        </div>
+        <div class="row">
+          <input type="text" id="self-fallback" value="我" style="width:70px" placeholder="我的首字" />
+          <input type="text" id="other-fallback" value="杨" style="width:70px" placeholder="对方首字" />
+          <span class="hint">无头像时的首字</span>
+        </div>
+        <input type="file" id="avatar-file" accept="image/*" style="display:none" />
       </div>
 
       <div class="section">
         <label class="section-title">消息列表</label>
         <div id="message-list" class="message-list"></div>
-        <button id="add-message" class="btn btn-primary btn-block">+ 添加消息</button>
+        <div class="row">
+          <button id="add-text" class="btn btn-primary" style="flex:1">+ 消息</button>
+          <button id="add-time" class="btn" style="flex:1">+ 时间</button>
+          <button id="add-system" class="btn" style="flex:1">+ 系统</button>
+        </div>
       </div>
 
       <div class="section">
@@ -57,30 +80,40 @@
       </div>
     </aside>
 
-    <!-- 右侧：手机预览 -->
+    <!-- 右侧预览 -->
     <main class="preview-area">
-      <div class="preview-label">预览</div>
-      <div id="phone" class="phone">
+      <div class="preview-label">预览（导出区域为手机屏幕）</div>
+      <div id="phone" class="phone dark">
         <!-- 状态栏 -->
         <div class="status-bar">
-          <span class="sb-signal" id="sb-signal">4G</span>
-          <span class="sb-time" id="sb-time">18:30</span>
-          <span class="sb-battery">
-            <span class="battery-icon" id="battery-icon"></span>
-            <span id="sb-battery">86%</span>
+          <span class="sb-time" id="sb-time">20:54</span>
+          <span class="sb-right">
+            <svg class="sb-icon" viewBox="0 0 16 12" width="16" height="12"><path d="M8 9.5a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8zM8 6c-1.7 0-3.2.7-4.3 1.8l1.4 1.4A4.1 4.1 0 0 1 8 8c1.1 0 2.1.4 2.9 1.2l1.4-1.4A6 6 0 0 0 8 6zm0-3.5c-2.6 0-5 1-6.8 2.8l1.4 1.4A7.6 7.6 0 0 1 8 4.5c2.1 0 4 .8 5.4 2.2l1.4-1.4A9.5 9.5 0 0 0 8 2.5z" fill="currentColor"/></svg>
+            <span class="sb-signal-text" id="sb-signal">5G</span>
+            <svg class="sb-icon" viewBox="0 0 14 12" width="14" height="12"><rect x="0" y="8" width="2.4" height="4" rx="0.6" fill="currentColor"/><rect x="3.6" y="5.5" width="2.4" height="6.5" rx="0.6" fill="currentColor"/><rect x="7.2" y="3" width="2.4" height="9" rx="0.6" fill="currentColor"/><rect x="10.8" y="0.5" width="2.4" height="11.5" rx="0.6" fill="currentColor"/></svg>
+            <span class="battery-chip"><span class="battery-fill" id="battery-fill"></span><span id="sb-battery">31</span></span>
           </span>
         </div>
         <!-- 标题栏 -->
         <div class="title-bar">
-          <span class="tb-back">‹</span>
-          <span class="tb-title" id="tb-title">微信昵称</span>
-          <span class="tb-more">•••</span>
+          <span class="tb-left">
+            <svg class="tb-back" viewBox="0 0 12 20" width="11" height="19"><path d="M10.5 1 2 10l8.5 9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+            <span class="tb-badge" id="tb-badge">12</span>
+          </span>
+          <span class="tb-title" id="tb-title">天津豹途机车销售服务中心 小杨</span>
+          <svg class="tb-more" viewBox="0 0 22 6" width="22" height="6"><circle cx="3" cy="3" r="2.4" fill="currentColor"/><circle cx="11" cy="3" r="2.4" fill="currentColor"/><circle cx="19" cy="3" r="2.4" fill="currentColor"/></svg>
         </div>
-        <div class="tb-member-row" id="tb-member-row" style="display:none">
-          <span id="tb-member-count">3</span>人在本群
-        </div>
-        <!-- 聊天气泡区 -->
+        <!-- 聊天区 -->
         <div id="chat-area" class="chat-area"></div>
+        <!-- 底部输入栏 -->
+        <div class="input-bar">
+          <svg class="ib-icon" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 9v6M8 9a1.6 1.6 0 1 1 0 0zM8 15a1.6 1.6 0 1 1 0 0z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M14.5 10a2.6 2.6 0 0 1 0 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          <div class="ib-input"></div>
+          <svg class="ib-icon" viewBox="0 0 24 24" width="24" height="24"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          <svg class="ib-icon" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="8.5" cy="10" r="1.3" fill="currentColor"/><circle cx="15.5" cy="10" r="1.3" fill="currentColor"/><path d="M7.5 14a5.5 5.5 0 0 0 9 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          <svg class="ib-icon" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 7.5v9M7.5 12h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="nav-gesture"></div>
       </div>
     </main>
   </div>
